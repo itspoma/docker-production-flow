@@ -1,0 +1,28 @@
+app:
+  image: busybox
+  volumes:
+    # app
+    - ./src:/var/www/app:ro
+    # nginx
+    - ./environment/nginx/config:/etc/nginx:ro
+    - ./environment/nginx/log:/var/log/nginx
+    # php
+    - ./environment/php/config/php.ini:/usr/local/etc/php/php.ini:ro
+    - ./environment/php/config/php-fpm.conf:/usr/local/etc/php-fpm.conf:ro
+    - ./environment/php/log:/var/log/php
+
+nginx:
+  image: nginx:1.9
+  ports:
+    - 80:80
+  links:
+    - phpfpm
+  volumes_from:
+    - app
+
+phpfpm:
+  image: php:5.6-fpm
+  expose:
+    - 9000
+  volumes_from:
+    - app
